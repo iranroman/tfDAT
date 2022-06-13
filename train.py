@@ -64,6 +64,12 @@ plt.close()
 num_epochs = 10
 for e in range(num_epochs):
 
+    # 1. use GrFNN.forward to obtain y_hat
+
+    # 2. use y_hat to calculate the trf_weights
+
+    # 3. modify GrFNN.train_epoch to use the trf_weights
+
     print("==========================")
     print("==========================")
     print("Epoch: ", e + 1)

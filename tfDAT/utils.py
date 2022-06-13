@@ -159,12 +159,7 @@ def train_step(
         y_hat = tf.squeeze(l_output_r, axis=1)
         
         # Eshed and Iran TODO:
-        # 1. compute the boosting TRF using 'y_hat' as input and EEG as output
-        # 2. use the TRF weights to convolve with 'y_hat'
-        # 3. change the loss to be between the eeg and the output of the convolution 'y_hat'*TRF weights 
-        # to achieve this in the tf.function scope we might have to do something like:
-        # https://stackoverflow.com/questions/55679540/tensorflow-2-0-function-with-tf-function-decorator-doesnt-take-numpy-function
-        # or write the boosting algorithm in tensorflow
+        # change the loss to be between the eeg and the output of the convolution 'y_hat'*TRF weights 
         
         curr_loss = mse(target, y_hat)
     tf.print("==========================")
