@@ -50,7 +50,7 @@ GrFNN = tfDAT.Model(
 )
 
 # let's integrate the model to see how it behaves before training
-y_hat, freqs = GrFNN.forward(tf.float32)
+y_hat, freqs = GrFNN.inference(stim_values, tf.float32)
 plt.plot(GrFNN.time.numpy()[:-1], y_hat.numpy(), label='DAT')
 plt.plot(GrFNN.time.numpy()[:-1], np.squeeze(target_values.numpy()), label='target')
 plt.plot(GrFNN.time.numpy()[:-1], freqs.numpy(), label='DAT freq')
@@ -64,7 +64,7 @@ plt.close()
 num_epochs = 10
 for e in range(num_epochs):
 
-    # 1. use GrFNN.forward to obtain y_hat
+    # 1. use GrFNN.inference to obtain y_hat
 
     # 2. use y_hat to calculate the trf_weights
 
@@ -86,7 +86,7 @@ for e in range(num_epochs):
     GrFNN.train_epoch(tf.float32)
 
 # let's integrate the model to see how it behaves AFTER training
-y_hat, freqs = GrFNN.forward(tf.float32)
+y_hat, freqs = GrFNN.inference(stim_values, tf.float32)
 plt.plot(GrFNN.time.numpy()[:-1], y_hat.numpy(), label='DAT')
 plt.plot(GrFNN.time.numpy()[:-1], np.squeeze(target_values.numpy()), label='target')
 plt.plot(GrFNN.time.numpy()[:-1], freqs.numpy(), label='DAT freq')

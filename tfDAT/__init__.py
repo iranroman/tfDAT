@@ -130,10 +130,10 @@ class Model:
             dtype,
         )
 
-    def forward(self, dtype=tf.float16):
+    def inference(self, stim_values, dtype=tf.float16):
 
         time = tf.cast(self.time, dtype)
-        stim_values = tf.cast(complex2concat(self.stim.values, 2), dtype)
+        stim_values = tf.cast(complex2concat(stim_values, 2), dtype)
         layer_state = [
             tf.tile(
                 tf.expand_dims(
