@@ -149,7 +149,7 @@ class Model:
                     ),
                     axis=0,
                 ),
-                tf.constant([self.stim.ndatapoints.numpy(), 1]),
+                tf.constant([tf.shape(stim_values).numpy()[0], 1]),
             )
             for layer in self.layers
         ]

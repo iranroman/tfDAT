@@ -217,6 +217,7 @@ def forward(
     l_output_r, l_output_i, freqs = tf.split(layers_states[0], 3, axis=2)
     l_output_r = tf.transpose(l_output_r, (1, 2, 0))
     l_output_i = tf.transpose(l_output_i, (1, 2, 0))
+    freqs = tf.transpose(freqs, (1, 2, 0))
     y_hat = tf.squeeze(l_output_r, axis=1)
 
     return y_hat, freqs
