@@ -4,37 +4,42 @@ import tfDAT
 import matplotlib.pyplot as plt
 import os
 import scipy.io
+from eelbrain import boosting
 
-# get name of all mat files in the directory
-all_env = os.listdir('data')
-all_env.sort()
+# data paths
+subj_data = '../SpeechEnvOscillator/eeg_data_exps/data/SRmats_12segments/sub200_SR_12equal_segments.mat'
+subj_data = scipy.io.loadmat(subj_data)
 
-# Load the mat files
-data = [scipy.io.loadmat(''.join(['data/',f])) for f in all_env if 'env' in f]
-all_envelopes = [np.squeeze(f['env_ds']) for f in data]
-all_envelopes = [np.diff(np.squeeze(np.array(env))) for env in all_envelopes]
-min_len = len(min(all_envelopes,key=len))
-all_envelopes = np.concatenate([env[np.newaxis,:min_len, np.newaxis] for env in all_envelopes], axis=0)
-nenvs = len(all_envelopes)
 
+# get the envelopes and the eeg data
+eeg_data = subj_data['wholeR'].T
+env_data = subj_data['wholeS'].T
+nsamps = 2945
+nenvs = 12
+eeg_data = eeg_data[:nsamps*nenvs].reshape(12,nsamps,64)
+env_data = np.diff(env_data[:nsamps*nenvs].reshape(12,nsamps,1),axis=1)
+
+# get random indices
 all_idx = np.random.choice(nenvs, nenvs, replace=False)
-train_idx = all_idx[:150]
-val_idx = all_idx[150:]
+train_idx = all_idx#[:150]
+val_idx = all_idx#[150:]
 
 # declare the model's stimulus values
 fs = 100
-dur = min_len/fs
-stim_values = all_envelopes[train_idx]
+dur = nsamps/fs
+stim_values = env_data[train_idx]
 stim_values = tf.convert_to_tensor(stim_values, dtype=tf.float32)
 stim_values = tf.complex(stim_values, tf.zeros_like(stim_values))
 
-val_values = all_envelopes[val_idx]
+val_values = env_data[val_idx]
 val_values = tf.convert_to_tensor(val_values, dtype=tf.float32)
 val_values = tf.complex(val_values, tf.zeros_like(val_values))
 
 # declare the model's target values
-target_values = all_envelopes[train_idx,:-1]
+target_values = eeg_data[train_idx,:-2]
 target_values = tf.convert_to_tensor(target_values, dtype=tf.float32)
+
+
 
 # define the stimulus object
 s = tfDAT.stimulus(values=stim_values, fs=fs)
@@ -86,10 +91,14 @@ num_epochs = 10
 for e in range(num_epochs):
 
     # 1. use GrFNN.inference to obtain y_hat
+    y_hat, freqs = GrFNN.inference(stim_values, tf.float32)
 
-    # 2. use y_hat to calculate the trf_weights
+    # 2. get the trf weights ussing eelbrain boosting (Eshed)
+    boosting(target_values.numpy(), y_hat.numpy(), -0.1, 0.1)
+    trf_weights = #TODO 
 
-    # 3. modify GrFNN.train_epoch to use the trf_weights
+    # 3. modify GrFNN.train_epoch to use the trf_weights (Iran)
+    # TODO
 
     print("==========================")
     print("==========================")
